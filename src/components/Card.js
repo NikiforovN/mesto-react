@@ -1,6 +1,6 @@
 
 
-function Cards(props){
+function Card(props){
     
      
 
@@ -23,4 +23,4 @@ function Cards(props){
     )
 }
 
-export default Cards
+export default Card

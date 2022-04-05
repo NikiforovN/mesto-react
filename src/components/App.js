@@ -4,7 +4,7 @@ import Main from '../components/Main';
 import Footer from '../components/Footer';
 import PopupWithForm from '../components/PopupWithForm';
 import {api} from '../components/Api'
-import Cards from '../components/Cards'
+import Cards from './Card'
 import ImagePopup from '../components/ImagePopup';
    
 
