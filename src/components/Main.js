@@ -1,42 +1,71 @@
 import profileEditButtonPic from "../images/profile__edit-button.svg";
 import profileAddButtonPic from "../images/profile__add-button.svg";
 import React from "react";
-import { api } from "../components/Api";
-import Cards from "./Card";
+import Card from "./Card";
+import { UserInfo } from "../contexts/CurrentUserContext";
+import { Cards } from "../contexts/CardsContext";
+import { api } from "./Api";
 
 function Main(props) {
-  const [userData, setUserData] = React.useState({
-    name: "Жак Кустов",
-    about: "Исследователь",
-    avatar:
-      "https://upload.wikimedia.org/wikipedia/commons/b/b2/Jacque_Fresco_and_lemon_tree.jpg",
-  });
-  const [cardsInfo, setCardsInfo] = React.useState([]);
+  const userInfo = React.useContext(UserInfo);
+  const cardsInfo = React.useContext(Cards);
 
-  React.useEffect(() => {
-    Promise.all([api.getProfile(), api.getInitialCards()])
-      .then(([userData, cards]) => {
-        setUserData(userData);
-        setCardsInfo(cards);
+  function handleCardDelete(card) {
+    api
+      .deleteCard(card._id)
+      .then((res) => {
+         const cardsAfterDelete = cardsInfo.filter((c) => c._id !== card._id);
+         console.log(cardsAfterDelete)
+        props.setCard(cardsAfterDelete); 
       })
       .catch((err) => {
         console.log(err.ok);
       });
-  }, []);
+  }
+
+  function handleCardLike(card) {
+    const isLiked = card.likes.some((i) => i._id === userInfo._id);
+
+    if (isLiked) {
+      api
+        .deleteLike(card._id)
+        .then((res) => {
+          const likedCard = cardsInfo.map((c) =>
+            c._id === card._id ? res : c
+          );
+          props.setCard(likedCard);
+        })
+        .catch((err) => {
+          console.log(err.ok);
+        });
+    } else {
+      api
+        .putLike(card._id)
+        .then((res) => {
+          const likedCard = cardsInfo.map((c) =>
+            c._id === card._id ? res : c
+          );
+          props.setCard(likedCard);
+        })
+        .catch((err) => {
+          console.log(err.ok);
+        });
+    }
+  }
 
   return (
     <main>
       <section className="profile">
         <div className="profile__avatar" onClick={props.onEditAvatar}>
           <img
-            src={userData.avatar}
+            src={userInfo.avatar}
             alt="Жак-Ив Кусто"
             className="profile__pic"
           />
         </div>
         <div className="profile__info">
           <div className="profile__info-first-row">
-            <h1 className="profile__name">{userData.name}</h1>
+            <h1 className="profile__name">{userInfo.name}</h1>
             <button
               type="button"
               className="profile__edit-button buttons-hover"
@@ -50,7 +79,7 @@ function Main(props) {
               />
             </button>
           </div>
-          <p className="profile__status">{userData.about}</p>
+          <p className="profile__status">{userInfo.about}</p>
         </div>
         <button
           type="button"
@@ -68,12 +97,17 @@ function Main(props) {
       <section className="elements">
         {cardsInfo.map((item) => {
           return (
-            <Cards
+            <Card
+              card={item}
               link={item.link}
               name={item.name}
               key={item._id}
-              like={item.likes.length}
+              likes={item.likes}
+              owner={item.owner._id}
+              currentUser={userInfo._id}
               onCardClick={props.onImagePopup}
+              onCardLike={handleCardLike}
+              onCardDelete={handleCardDelete}
             />
           );
         })}

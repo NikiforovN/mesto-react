@@ -4,6 +4,9 @@ import Main from "../components/Main";
 import Footer from "../components/Footer";
 import PopupWithForm from "../components/PopupWithForm";
 import ImagePopup from "../components/ImagePopup";
+import { api } from "../components/Api";
+import { UserInfo } from "../contexts/CurrentUserContext";
+import { Cards } from "../contexts/CardsContext";
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
@@ -16,6 +19,25 @@ function App() {
     name: "",
     link: "",
   });
+
+  const [currentUser, setCurrentUser] = React.useState({
+    name: "Жак Кустов",
+    about: "Исследователь",
+    avatar:
+      "https://upload.wikimedia.org/wikipedia/commons/b/b2/Jacque_Fresco_and_lemon_tree.jpg",
+  });
+  const [cardsInfo, setCardsInfo] = React.useState([]);
+
+  React.useEffect(() => {
+    Promise.all([api.getProfile(), api.getInitialCards()])
+      .then(([userData, cards]) => {
+        setCurrentUser(userData);
+        setCardsInfo(cards);
+      })
+      .catch((err) => {
+        console.log(err.ok);
+      });
+  }, []);
 
   function handleEditProfilePopupOpen() {
     setIsEditProfilePopupOpen(true);
@@ -45,14 +67,18 @@ function App() {
   }
 
   return (
-    <>
+    <UserInfo.Provider value={currentUser}>
       <Header />
-      <Main
-        onEditProfile={handleEditProfilePopupOpen}
-        onAddPlace={handleAddPopupOpen}
-        onEditAvatar={handleEditAvatarPopupOpen}
-        onImagePopup={handleImagePopupOpen}
-      />
+
+      <Cards.Provider value={cardsInfo}>
+        <Main
+          onEditProfile={handleEditProfilePopupOpen}
+          onAddPlace={handleAddPopupOpen}
+          onEditAvatar={handleEditAvatarPopupOpen}
+          onImagePopup={handleImagePopupOpen}
+          setCard={setCardsInfo}
+        />
+      </Cards.Provider>
 
       <Footer />
 
@@ -170,7 +196,7 @@ function App() {
           <span className="popup__input-error popup__avatar-link-error"></span>
         </div>
       </PopupWithForm>
-    </>
+    </UserInfo.Provider>
   );
 }
 
