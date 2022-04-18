@@ -31,6 +31,7 @@ function EditProfilePopup(props){
             name,
             about: description,
           });
+          
     }
 
     return(

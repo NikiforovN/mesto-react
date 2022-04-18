@@ -4,54 +4,11 @@ import React from "react";
 import Card from "./Card";
 import { UserInfo } from "../contexts/CurrentUserContext";
 import { Cards } from "../contexts/CardsContext";
-import { api } from "./Api";
 
 function Main(props) {
   const userInfo = React.useContext(UserInfo);
   const cardsInfo = React.useContext(Cards);
 
-  function handleCardDelete(card) {
-    api
-      .deleteCard(card._id)
-      .then((res) => {
-         const cardsAfterDelete = cardsInfo.filter((c) => c._id !== card._id);
-         console.log(cardsAfterDelete)
-        props.setCard(cardsAfterDelete); 
-      })
-      .catch((err) => {
-        console.log(err.ok);
-      });
-  }
-
-  function handleCardLike(card) {
-    const isLiked = card.likes.some((i) => i._id === userInfo._id);
-
-    if (isLiked) {
-      api
-        .deleteLike(card._id)
-        .then((res) => {
-          const likedCard = cardsInfo.map((c) =>
-            c._id === card._id ? res : c
-          );
-          props.setCard(likedCard);
-        })
-        .catch((err) => {
-          console.log(err.ok);
-        });
-    } else {
-      api
-        .putLike(card._id)
-        .then((res) => {
-          const likedCard = cardsInfo.map((c) =>
-            c._id === card._id ? res : c
-          );
-          props.setCard(likedCard);
-        })
-        .catch((err) => {
-          console.log(err.ok);
-        });
-    }
-  }
 
   return (
     <main>
@@ -106,8 +63,8 @@ function Main(props) {
               owner={item.owner._id}
               currentUser={userInfo._id}
               onCardClick={props.onImagePopup}
-              onCardLike={handleCardLike}
-              onCardDelete={handleCardDelete}
+              onCardLike={props.onCardLike}
+              onCardDelete={props.onCardDelete}
             />
           );
         })}
