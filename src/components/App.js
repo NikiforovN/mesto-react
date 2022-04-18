@@ -7,6 +7,7 @@ import ImagePopup from "../components/ImagePopup";
 import { api } from "../components/Api";
 import { UserInfo } from "../contexts/CurrentUserContext";
 import { Cards } from "../contexts/CardsContext";
+import EditProfilePopup from "./EditProfilePopup";
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
@@ -66,6 +67,15 @@ function App() {
     setIsEditAvatarPopupOpen(false);
   }
 
+  function handleUpdateUser(currentUser){
+    api.editProfile(currentUser)
+    .then(res=>{
+      setCurrentUser(res)
+      closeAllPopups()
+    })
+    .catch(err=>console.log(err.ok))
+  }
+
   return (
     <UserInfo.Provider value={currentUser}>
       <Header />
@@ -94,41 +104,11 @@ function App() {
         }}
       />
 
-      <PopupWithForm
-        popupType="edit-form"
-        title="Редактировать профиль"
-        show={isEditProfilePopupOpen}
-        onClickClose={closeAllPopups}
-      >
-        <div className="popup__field-container">
-          <input
-            type="text"
-            className="popup__field"
-            name="name"
-            defaultValue="Жак-Ив Кусто"
-            id="name"
-            placeholder="Введите ваше имя"
-            minLength="2"
-            maxLength="40"
-            required
-          />
-          <span className="popup__input-error popup__name-error"></span>
-        </div>
-        <div className="popup__field-container">
-          <input
-            type="text"
-            className="popup__field"
-            name="about"
-            defaultValue="Исследователь океана"
-            id="status"
-            placeholder="Введите вашу профессию"
-            minLength="2"
-            maxLength="200"
-            required
-          />
-          <span className="popup__input-error popup__status-error"></span>
-        </div>
-      </PopupWithForm>
+      <EditProfilePopup
+        isOpen={isEditProfilePopupOpen}
+        onClose={closeAllPopups}
+        onUpdateUser={handleUpdateUser}
+      />
 
       <PopupWithForm
         popupType="add-place"
