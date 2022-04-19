@@ -1,23 +1,38 @@
-import React, { useRef } from "react";
+import React from "react";
 import PopupWithForm from "../components/PopupWithForm";
 import { Cards } from "../contexts/CardsContext";
 
 function AddPlacePopup(props) {
+  const [name, setName] = React.useState("");
+  const [link, setLink] = React.useState("");
+  const cards = React.useContext(Cards);
 
-  const nameInput = useRef();
-  const linkInput = useRef();
+  React.useEffect(() => {
+    setName(cards.name);
+    setLink(cards.link);
+  }, [cards]);
+
+  function handleNameChange(event) {
+    setName(event.target.value);
+  }
+
+  function handleLinkChange(event) {
+    setLink(event.target.value);
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
 
     props.onAddPlace({
-      name: nameInput.current.value,
-      link: linkInput.current.value,
+      name: name,
+      link: link,
     });
-    nameInput.current.value='';
-    linkInput.current.value='';
   }
 
+  React.useEffect(() => {
+    setName("");
+    setLink("");
+  }, [props.isOpen]);
 
   return (
     <PopupWithForm
@@ -32,13 +47,13 @@ function AddPlacePopup(props) {
           type="text"
           className="popup__field"
           name="name"
-          defaultValue=""
           id="title"
           placeholder="Название"
           minLength="2"
           maxLength="30"
           required
-          ref={nameInput}
+          onChange={handleNameChange}
+          value={name}
         />
         <span className="popup__input-error popup__title-error"></span>
       </div>
@@ -47,14 +62,17 @@ function AddPlacePopup(props) {
           type="url"
           className="popup__field"
           name="link"
-          defaultValue=""
           id="link"
           placeholder="Ссылка на картинку"
           required
-          ref={linkInput}
+          onChange={handleLinkChange}
+          value={link}
         />
         <span className="popup__input-error popup__link-error"></span>
       </div>
+      <button className="popup__button" type="submit">
+        Сохранить
+      </button>
     </PopupWithForm>
   );
 }

@@ -10,8 +10,12 @@ function EditAvatarPopup(props) {
     props.onUpdateAvatar({
       avatar: avatarInput.current.value,
     });
-    avatarInput.current.value='';
   }
+
+  React.useEffect(() => {
+    avatarInput.current.value = "";
+  }, [props.isOpen]);
+
   return (
     <PopupWithForm
       popupType="change-avatar"
@@ -35,6 +39,9 @@ function EditAvatarPopup(props) {
         />
         <span className="popup__input-error popup__avatar-link-error"></span>
       </div>
+      <button className="popup__button" type="submit">
+        Сохранить
+      </button>
     </PopupWithForm>
   );
 }

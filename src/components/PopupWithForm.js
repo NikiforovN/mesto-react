@@ -16,11 +16,12 @@ function PopupWithForm(props) {
           className="close-icon buttons-hover"
           onClick={props.onClickClose}
         ></button>
-        <form className="popup__container" method="get" onSubmit={props.onSubmit}>
+        <form
+          className="popup__container"
+          method="get"
+          onSubmit={props.onSubmit}
+        >
           {props.children}
-          <button className="popup__button" type="submit">
-            Сохранить
-          </button>
         </form>
       </div>
     </section>

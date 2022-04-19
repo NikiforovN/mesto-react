@@ -9,7 +9,6 @@ function Main(props) {
   const userInfo = React.useContext(UserInfo);
   const cardsInfo = React.useContext(Cards);
 
-
   return (
     <main>
       <section className="profile">
@@ -65,6 +64,7 @@ function Main(props) {
               onCardClick={props.onImagePopup}
               onCardLike={props.onCardLike}
               onCardDelete={props.onCardDelete}
+              onConfirmPopup={props.onConfirmPopup}
             />
           );
         })}

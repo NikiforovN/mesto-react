@@ -18,7 +18,7 @@ function Card(props) {
           type="button"
           className="element__trash-button"
           onClick={() => {
-            props.onCardDelete(props.card);
+            props.onConfirmPopup(props.card);
           }}
         ></button>
       )}
