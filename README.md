@@ -29,6 +29,7 @@
 
 Клонировать репозиторий:
 > git clone https://github.com/NikiforovN/mesto-react.git
+:::code language="csharp" source="intro/samples/cu/Controllers/StudentsController.cs" range="2-24,26":::
 
 **gh-pages**
 
