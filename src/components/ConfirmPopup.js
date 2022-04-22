@@ -18,7 +18,7 @@ function ConfirmPopup(props) {
         className="popup__button popup__button_difference_confirm-form"
         type="submit"
       >
-        Да
+        {props.isLoading ? "Удаление..." : "Да"}
       </button>
     </PopupWithForm>
   );

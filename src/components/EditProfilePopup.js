@@ -29,6 +29,7 @@ function EditProfilePopup(props) {
     });
   }
 
+
   return (
     <PopupWithForm
       popupType="edit-form"
@@ -68,7 +69,7 @@ function EditProfilePopup(props) {
         <span className="popup__input-error popup__status-error"></span>
       </div>
       <button className="popup__button" type="submit">
-        Сохранить
+        {props.isLoading ? "Сохранение..." : "Сохранить"}
       </button>
     </PopupWithForm>
   );

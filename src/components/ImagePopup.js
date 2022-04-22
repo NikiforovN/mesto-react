@@ -1,10 +1,15 @@
 function ImagePopup(props) {
+  function handleOverlayClose(evt) {
+    if (evt.target === evt.currentTarget) props.onClickClose();
+  }
+
   return (
     <section
       className={`popup popup_difference_opacity ${
         props.show && "popup_opened"
       }`}
       id="image-popup"
+      onClick={handleOverlayClose}
     >
       <div className="popup__box">
         <figure className="popup__figure">

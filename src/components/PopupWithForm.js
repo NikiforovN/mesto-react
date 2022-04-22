@@ -1,8 +1,17 @@
 function PopupWithForm(props) {
+
+ 
+
+  function handleOverlayClose(evt){
+    if (evt.target === evt.currentTarget)
+    props.onClickClose();
+  }
+
   return (
     <section
       className={`popup ${props.show && "popup_opened"}`}
       id={props.popupType}
+      onClick={handleOverlayClose}
     >
       <div
         className={`popup__rectangle ${

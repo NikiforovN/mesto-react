@@ -2,7 +2,6 @@ import React from "react";
 import Header from "../components/Header";
 import Main from "../components/Main";
 import Footer from "../components/Footer";
-import PopupWithForm from "../components/PopupWithForm";
 import ImagePopup from "../components/ImagePopup";
 import { api } from "../utils/Api";
 import { UserInfo } from "../contexts/CurrentUserContext";
@@ -33,6 +32,7 @@ function App() {
       "https://upload.wikimedia.org/wikipedia/commons/b/b2/Jacque_Fresco_and_lemon_tree.jpg",
   });
   const [cardsInfo, setCardsInfo] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
     Promise.all([api.getProfile(), api.getInitialCards()])
@@ -46,18 +46,22 @@ function App() {
   }, []);
 
   function handleEditProfilePopupOpen() {
+    setEventListenerOnEscKeydown();
     setIsEditProfilePopupOpen(true);
   }
 
   function handleAddPopupOpen() {
+    setEventListenerOnEscKeydown();
     setIsAddPlacePopupOpen(true);
   }
 
   function handleEditAvatarPopupOpen() {
+    setEventListenerOnEscKeydown();
     setIsEditAvatarPopupOpen(true);
   }
 
   function handleImagePopupOpen(title, link) {
+    setEventListenerOnEscKeydown();
     setIsImagePopupOpen(true);
     setSelectedCard({
       name: title,
@@ -66,6 +70,7 @@ function App() {
   }
 
   function handleConfirmPopupOpen(card) {
+    setEventListenerOnEscKeydown();
     setIsConfirmPopupOpen(true);
     setDeletedCard(card);
   }
@@ -76,29 +81,35 @@ function App() {
     setIsEditProfilePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setIsConfirmPopupOpen(false);
+    document.removeEventListener("keydown", handleEscClose);
   }
 
   function handleUpdateUser(currentUser) {
+    setIsLoading(true);
     api
       .editProfile(currentUser)
       .then((res) => {
         setCurrentUser(res);
         closeAllPopups();
       })
-      .catch((err) => console.log(err.ok));
+      .catch((err) => console.log(err.ok))
+      .finally(() => setIsLoading(false));
   }
 
   function handleUpdateAvatar(currentUser) {
+    setIsLoading(true);
     api
       .editAvatar(currentUser)
       .then((res) => {
         setCurrentUser(res);
         closeAllPopups();
       })
-      .catch((err) => console.log(err.ok));
+      .catch((err) => console.log(err.ok))
+      .finally(() => setIsLoading(false));
   }
 
   function handleCardDelete(deletedCard) {
+    setIsLoading(true);
     api
       .deleteCard(deletedCard._id)
       .then((res) => {
@@ -110,7 +121,8 @@ function App() {
       })
       .catch((err) => {
         console.log(err.ok);
-      });
+      })
+      .finally(() => setIsLoading(false));
   }
 
   function handleCardLike(card) {
@@ -144,6 +156,7 @@ function App() {
   }
 
   function handleAddPlaceCard(cards) {
+    setIsLoading(true);
     api
       .addCard(cards)
       .then((newCard) => {
@@ -152,7 +165,16 @@ function App() {
       })
       .catch((err) => {
         console.log(err.ok);
-      });
+      })
+      .finally(() => setIsLoading(false));
+  }
+
+  function handleEscClose(evt) {
+    if (evt.key === "Escape") closeAllPopups();
+  }
+
+  function setEventListenerOnEscKeydown() {
+    document.addEventListener("keydown", handleEscClose);
   }
 
   return (
@@ -174,6 +196,7 @@ function App() {
             closeAllPopups();
           }}
           onAddPlace={handleAddPlaceCard}
+          isLoading={isLoading}
         />
       </Cards.Provider>
 
@@ -195,12 +218,14 @@ function App() {
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
         onUpdateUser={handleUpdateUser}
+        isLoading={isLoading}
       />
 
       <EditAvatarPopup
         isOpen={isEditAvatarPopupOpen}
         onClose={closeAllPopups}
         onUpdateAvatar={handleUpdateAvatar}
+        isLoading={isLoading}
       />
 
       <ConfirmPopup
@@ -208,6 +233,7 @@ function App() {
         onCardDelete={handleCardDelete}
         onClose={closeAllPopups}
         deleteCard={deletedCard}
+        isLoading={isLoading}
       />
     </UserInfo.Provider>
   );
